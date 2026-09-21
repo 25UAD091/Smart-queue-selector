@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUEUE LOGIC LAB</title>
+<style>
+body{margin:0;font-family:Arial;background:#07111f;color:#eaf2ff}header{text-align:center;padding:20px;border-bottom:1px solid #26364d}h1{margin:0}nav{margin-top:15px}button{padding:10px 18px;margin:4px;border:1px solid #405674;border-radius:8px;background:#102036;color:white;cursor:pointer}.active,.run{background:#1c6cff}.page{display:none;max-width:950px;margin:auto;padding:20px}.page.active{display:block}.card{background:#0d1b2e;border:1px solid #263b56;border-radius:12px;padding:18px;margin-bottom:18px}h2{color:#69a7ff}table{width:100%;border-collapse:collapse}th,td{border:1px solid #30445e;padding:10px;text-align:center}th{background:#13243a}input{width:55px;padding:7px;background:#081525;color:white;border:1px solid #405674;border-radius:5px;text-align:center}.result{margin-top:15px;padding:15px;background:#102c22;border:1px solid #2c8b67;border-radius:8px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#101f33;padding:15px;text-align:center;border-radius:10px}.stat b{display:block;font-size:22px}@media(max-width:650px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>QUEUE LOGIC LAB</h1>
+<nav>
+<button class="tab active" onclick="show('sim',this)">SIM</button>
+<button class="tab" onclick="show('logic',this)">LOGIC</button>
+<button class="tab" onclick="show('tests',this)">TESTS</button>
+<button class="tab" onclick="show('report',this)">REPORT</button>
+</nav></header>
+
+<section id="sim" class="page active"><div class="card">
+<h2>Combinational Logic Based Smart Queue Selector</h2>
+<p>Available counters → Minimum queue → Priority tie-break.</p>
+<p><b>Priority Rule:</b> Smaller priority number means higher priority. Therefore, P1 is higher priority than P2.</p>
+<table><tr><th>Counter</th><th>A</th><th>Q</th><th>P</th></tr>
+<tr><td>C1</td><td><input id="a1" value="1"></td><td><input id="q1" value="5"></td><td>2</td></tr>
+<tr><td>C2</td><td><input id="a2" value="1"></td><td><input id="q2" value="3"></td><td>1</td></tr>
+<tr><td>C3</td><td><input id="a3" value="0"></td><td><input id="q3" value="1"></td><td>3</td></tr>
+<tr><td>C4</td><td><input id="a4" value="1"></td><td><input id="q4" value="3"></td><td>2</td></tr></table>
+<button class="run" onclick="run()">RUN SELECTOR</button>
+<div id="result" class="result">Click RUN SELECTOR to select a counter.</div></div>
+<div class="stats"><div class="stat"><b id="total">12</b>Total Queue</div><div class="stat"><b id="wait">60m</b>Wait Estimate</div><div class="stat"><b id="avg">15m</b>Average Wait</div><div class="stat"><b id="avail">3/4</b>Availability</div></div></section>
+
+<section id="logic" class="page"><div class="card"><h2>Three-Stage Combinational Path</h2>
+<p>1. Check availability (A=1).</p><p>2. Find the minimum queue length.</p><p>3. If tied, select the smaller priority number.</p><p><b>Priority Rule:</b> P1 &gt; P2 &gt; P3.</p><p>The output depends only on current inputs; no memory is required.</p></div></section>
+
+<section id="tests" class="page"><div class="card"><h2>Sample Test Cases</h2><table><tr><th>Test</th><th>Condition</th><th>Expected</th></tr><tr><td>1</td><td>C2 and C4 tie</td><td>C2 (P1)</td></tr><tr><td>2</td><td>Only C1 available</td><td>C1</td></tr><tr><td>3</td><td>All busy</td><td>No counter</td></tr><tr><td>4</td><td>Different queues</td><td>Minimum Q</td></tr><tr><td>5</td><td>Same Q</td><td>Smaller P</td></tr></table></div></section>
+
+<section id="report" class="page"><div class="card"><h2>Project Report Summary</h2>
+<p><b>Objective:</b> Select the most suitable service counter using combinational logic.</p><p><b>Inputs:</b> Availability (A), Queue length (Q), Priority (P).</p><p><b>Selection Rule:</b> Select an available counter with minimum queue. If tied, select the smaller priority number.</p><p><b>Applications:</b> Banks, hospitals, railway counters and service centres.</p></div></section>
+
+<script>
+function show(id,b){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active')}
+function run(){let p=[2,1,3,2],d=[];for(let i=1;i<=4;i++)d.push({n:'C'+i,a:+document.getElementById('a'+i).value,q:+document.getElementById('q'+i).value,p:p[i-1]});let av=d.filter(x=>x.a===1),t=d.reduce((s,x)=>s+x.q,0);document.getElementById('total').textContent=t;document.getElementById('avail').textContent=av.length+'/4';document.getElementById('wait').textContent=t*5+'m';document.getElementById('avg').textContent=(av.length?Math.round(t/av.length*5):0)+'m';if(!av.length){document.getElementById('result').textContent='No available counter.';return}let m=Math.min(...av.map(x=>x.q)),z=av.filter(x=>x.q===m).sort((a,b)=>a.p-b.p)[0];document.getElementById('result').innerHTML='<b>'+z.n+' selected</b>: minimum queue = '+z.q+'. Priority P'+z.p+' resolves the tie.'}
+</script>
+</body></html>
